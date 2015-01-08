@@ -8,9 +8,11 @@ import android.content.pm.ResolveInfo;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -46,20 +48,22 @@ public class NerdLauncherFragment extends ListFragment {
             }
         });
 
-        ArrayAdapter<ResolveInfo> adapter = new ArrayAdapter<ResolveInfo>(
-                getActivity(), android.R.layout.simple_list_item_1, activities
-        ) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                PackageManager packageManager = getActivity().getPackageManager();
-                View view = super.getView(position, convertView, parent);
+        ResolveInfoAdapter adapter = new ResolveInfoAdapter(activities);
 
-                TextView textView = (TextView) view;
-                ResolveInfo resolveInfo = getItem(position);
-                textView.setText(resolveInfo.loadLabel(packageManager));
-                return view;
-            }
-        };
+//        ArrayAdapter<ResolveInfo> adapter = new ArrayAdapter<ResolveInfo>(
+//                getActivity(), android.R.layout.simple_list_item_1, activities
+//        ) {
+//            @Override
+//            public View getView(int position, View convertView, ViewGroup parent) {
+//                PackageManager packageManager = getActivity().getPackageManager();
+//                View view = super.getView(position, convertView, parent);
+//
+//                TextView textView = (TextView) view;
+//                ResolveInfo resolveInfo = getItem(position);
+//                textView.setText(resolveInfo.loadLabel(packageManager));
+//                return view;
+//            }
+//        };
 
         setListAdapter(adapter);
     }
@@ -74,6 +78,34 @@ public class NerdLauncherFragment extends ListFragment {
             intent.setClassName(activityInfo.applicationInfo.packageName, activityInfo.name);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
+        }
+    }
+
+    private class ResolveInfoAdapter extends ArrayAdapter<ResolveInfo> {
+
+        public ResolveInfoAdapter(List<ResolveInfo> resolveInfos) {
+            super(getActivity(), 0, resolveInfos);
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            PackageManager packageManager = getActivity().getPackageManager();
+
+            if (convertView == null) {
+                convertView = getActivity().getLayoutInflater().inflate(R.layout.list_item_resolveinfo, null);
+            }
+
+            ResolveInfo resolveInfo = getItem(position);
+
+            ImageView imageView = (ImageView) convertView.findViewById(R.id.resolveInfo_imageView);
+
+            TextView textView = (TextView) convertView.findViewById(R.id.resolveInfo_label);
+
+            imageView.setImageDrawable(resolveInfo.loadIcon(packageManager));
+            textView.setText(resolveInfo.loadLabel(packageManager));
+
+            return convertView;
         }
     }
 }
