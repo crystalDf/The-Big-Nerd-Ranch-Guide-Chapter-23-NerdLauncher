@@ -1,4 +1,4 @@
-package com.star.com.nerdlauncher;
+package com.star.nerdlauncher;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
